@@ -13,7 +13,6 @@
     <div class="nav-bar"></div>
     <div id="app">
         <div class="product">
-
             <div class="product-image">
                 <img :src="image" >
             </div>
@@ -26,9 +25,15 @@
                     <li v-for="detail in details">{{ detail }}</li>
                 </ul>
                 <div v-for="variant in variants" :key="variant.variantId">
-                    <p>{{ variant.variantColor }}</p>
+                    <p @mouseover="updateProduct(variant.variantImage)">{{ variant.variantColor }}</p>
+                </div> 
+
+                <button @click="addToCart">Add to cart</button>
+                
+                <div class="cart">
+                    <p>Cart({{ cart }})</p>
                 </div>
-            
+            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
