@@ -17,9 +17,12 @@
             <div class="product-image">
                 <img :src="image" >
             </div>
-            <a :href="link">Link</a>
+            
             <div class="product-info">
-                <h1>{{ product }}</h1>:
+                <h1>{{ product }}</h1>
+                <p v-if="inStock">In Stock</p>
+                <p v-else>Out of Stock</p>
+                <span v-show="onSale">On Sale!</span>
             </div>
             
         </div>

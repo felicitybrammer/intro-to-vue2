@@ -5,6 +5,7 @@ var app = new Vue({
     data: {
         product: 'Socks',
         image: './assets/vmSocks-green-onWhite.jpg',
-        link: 'https://github.com/felicitybrammer/intro-to-vue2'
+        inStock: true,
+        onSale: true
     }
 })
