@@ -1,5 +1,23 @@
+Vue.component('product-details', {
+    props: {
+        details: {
+            type: Array,
+            required: true
+        }
+    },
+    template:
+        `<ul>
+            <li v-for="detail in details">{{ detail }}</li>
+        </ul>`
+})
 
 Vue.component('product', {
+    props: {
+        premium: {
+            type: Boolean,
+            required: true
+        }
+    },
     template:
         `
 <div class="product">
@@ -11,11 +29,10 @@ Vue.component('product', {
         <h1>{{ title }}</h1>
         <p v-if="inStock">In Stock</p>
         <p v-else>Out of Stock</p>
+        <p>User is premium: {{ premium }}</p>
         <p>Shipping: {{ shipping }}</p>
         
-        <ul>
-            <li v-for="detail in details">{{ detail }}</li>
-        </ul>
+        <product-details :details="details"></product-details>
 
         <div class="color-box" 
             v-for="(variant, index) in variants" 
@@ -80,12 +97,20 @@ Vue.component('product', {
         },
         inStock() {
             return this.variants[this.selectedVariant].variantQuantity
+        },
+        shipping() {
+            if (this.premium) {
+                return "Free"
+            }
+            return 2.99
         }
     }
 })
 
 //new Vue instance, options object
 var app = new Vue({
-    el: '#app'
-
+    el: '#app',
+    data: {
+        premium: false
+    }
 })
