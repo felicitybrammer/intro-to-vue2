@@ -1,3 +1,49 @@
+//communicate from product-review to grandparent product
+var eventBus = new Vue()
+
+Vue.component('product-tabs', {
+    props: {
+        reviews: {
+            type: Array,
+            required: false
+        }
+    },
+    template: `
+    <div>
+        <div>
+            <span class="tabs" 
+                    :class="{ activeTab: selectedTab === tab }" 
+                  v-for="(tab, index) in tabs"  
+                  :key="index" 
+                  @click="selectedTab = tab">
+                  {{ tab }}
+            </span>
+        </div>
+
+        <div v-show="selectedTab === 'Reviews'">
+            <p v-if="!reviews.length">There are no reviews yet</p>
+            <ul v-else>
+                <li v-for="review in reviews">
+                    <p>{{ review.name }}</p>
+                    <p>{{ review.rating }}</p>
+                    <p>{{ review.review }}</p>
+                </li>
+            </ul>
+        </div>
+        
+        <div v-show="selectedTab === 'Write a Review'">
+            <product-review></product-review>
+        </div>
+    </div>
+    `,
+    data() {
+        return {
+            tabs: ['Reviews', 'Write a Review'],
+            selectedTab: 'Reviews'
+        }
+    }
+})
+
 Vue.component('product-review', {
     template: `
     <form class="review-form" @submit.prevent="onSubmit">
@@ -45,7 +91,7 @@ Vue.component('product-review', {
     methods: {
         //collect data from form
         onSubmit() {
-
+            this.errors = []
             if (this.name && this.review && this.rating) {
                 let productReview = {
                     name: this.name,
@@ -53,7 +99,7 @@ Vue.component('product-review', {
                     rating: this.rating
                 }
                 //send event and data to parent component
-                this.$emit('review-submitted', productReview)
+                eventBus.$emit('review-submitted', productReview)
                 //reset values
                 this.name = null
                 this.review = null
@@ -119,19 +165,8 @@ Vue.component('product', {
             Add to cart
         </button>
 
-        <div>
-            <h2>Reviews</h2>
-            <p v-if="!reviews.length">There are no reviews yet</p>
-            <ul>
-                <li v-for="review in reviews">
-                    <p>{{ review.name }}</p>
-                    <p>{{ review.rating }}</p>
-                    <p>{{ review.review }}</p>
-                </li>
-            </ul
-        </div>
-
-        <product-review @review-submitted="addReview"></product-review>
+        <product-tabs :reviews="reviews"></product-tabs>
+        
     </div>
 </div>
 `,
@@ -165,11 +200,7 @@ Vue.component('product', {
         updateProduct(index) {
             this.selectedVariant = index
             console.log(index)
-        },
-        addReview(productReview) {
-            this.reviews.push(productReview)
         }
-
     },
     computed: {
         title() {
@@ -187,8 +218,16 @@ Vue.component('product', {
             }
             return 2.99
         }
+    },
+    //run on mount
+    mounted() {
+        eventBus.$on('review-submitted', productReview => {
+            this.reviews.push(productReview)
+        })
     }
 })
+
+
 
 //new Vue instance, options object
 var app = new Vue({
@@ -204,3 +243,4 @@ var app = new Vue({
     }
 
 })
+
